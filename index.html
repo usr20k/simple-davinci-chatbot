@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <title>Janky ChatGPT</title>
+</head>
+<body background="/images/bg.png">
+  <div class="container mt-5">
+    <h1 class="mb-5" style="color: #FFF">Janky ChatGPT</h1>
+    <form onsubmit="generateText();return false">
+      <div class="form-group">
+        <input type="text" class="form-control" id="text" name="text">
+      </div>
+      <button type="button" class="btn btn-primary" onclick="generateText()">Send</button>
+    </form>
+    <div id="response" class="mt-5">
+      <div id="spinner" style="display: none;" class="text-center mb-5">
+        <img src="/images/loading-gif.gif" height="30" width="30">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function generateText() {
+      document.getElementById('spinner').style.display = '';
+      try {
+        const text = document.getElementById('text').value;
+
+        const response = await fetch('/generate-text', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text })
+        });
+
+        const data = await response.json();
+        const responseDiv = document.getElementById('response');
+        // Create a div for your prompt:
+        const q = document.createElement('div');
+        q.innerHTML = '<b>You:</b> ' + text
+        q.style.backgroundColor = '#ebf4f5'
+        q.className = "well well-small"
+        responseDiv.insertBefore(q, responseDiv.children[1]);
+        // Create a div for the response:
+        const d = document.createElement('div');
+        data.response = data.response.replace(/\n/g, "<br />")
+        d.innerHTML = '<b>GPT-3:</b> ' + data.response;
+        d.className = "well well-small"
+        d.style.backgroundColor = '#f3ebf5'
+        responseDiv.insertBefore(d, responseDiv.children[1]);
+        
+      } catch (error) {
+        console.error(error);
+      }
+      document.getElementById('spinner').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
