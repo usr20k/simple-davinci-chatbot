@@ -27,7 +27,16 @@
 
   <script>
     async function generateText() {
+      // Create a div for your query:
+      const responseDiv = document.getElementById('response');
+      const text = document.getElementById('text').value;
+      const q = document.createElement('div');
+      q.innerHTML = '<div class="panel-heading"><h3 class="panel-title">You</h3></div><div class="panel-body">' + text + '</div>'
+      q.style.backgroundColor = '#ebf4f5'
+      q.className = "panel panel-default"
+      responseDiv.insertBefore(q, responseDiv.children[1]);
       document.getElementById('spinner').style.display = '';
+      
       try {
         const text = document.getElementById('text').value;
 
@@ -38,20 +47,13 @@
           },
           body: JSON.stringify({ text })
         });
-
         const data = await response.json();
-        const responseDiv = document.getElementById('response');
-        // Create a div for your prompt:
-        const q = document.createElement('div');
-        q.innerHTML = '<b>You:</b> ' + text
-        q.style.backgroundColor = '#ebf4f5'
-        q.className = "well well-small"
-        responseDiv.insertBefore(q, responseDiv.children[1]);
+
         // Create a div for the response:
         const d = document.createElement('div');
         data.response = data.response.replace(/\n/g, "<br />")
-        d.innerHTML = '<b>GPT-3:</b> ' + data.response;
-        d.className = "well well-small"
+        d.innerHTML = '<div class="panel-heading"><h3 class="panel-title">ChatBot</h3></div><div class="panel-body">' + data.response + '</div>';
+        d.className = "panel panel-default"
         d.style.backgroundColor = '#f3ebf5'
         responseDiv.insertBefore(d, responseDiv.children[1]);
         
